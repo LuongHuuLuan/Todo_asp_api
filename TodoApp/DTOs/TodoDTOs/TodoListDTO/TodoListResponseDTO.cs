@@ -1,7 +1,8 @@
-﻿using TodoApp.Models.Todos;
+﻿using TodoApp.DTOs.TodoDTOs.TodoItemDTO;
+using TodoApp.Models.Todos;
 using TodoApp.Models.User;
 
-namespace TodoApp.DTO.Todos
+namespace TodoApp.DTOs.TodoDTOs.TodoListDTO
 {
     public class TodoListResponseDTO
     {
@@ -10,9 +11,9 @@ namespace TodoApp.DTO.Todos
         public ICollection<TodoItemResponseDTO> TodoItems { get; set; }
         public TodoListResponseDTO(TodoList todoList)
         {
-            this.Id = todoList.Id;
-            this.Title = todoList.Title;
-            this.TodoItems = todoList.TodoItems.Select(todoItem => new TodoItemResponseDTO(todoItem)).ToList();
+            Id = todoList.Id;
+            Title = todoList.Title;
+            TodoItems = todoList.TodoItems.Select(todoItem => new TodoItemResponseDTO(todoItem)).ToList();
         }
     }
 }

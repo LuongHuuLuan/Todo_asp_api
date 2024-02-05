@@ -1,6 +1,6 @@
 ﻿using TodoApp.Models.Todos;
 
-namespace TodoApp.DTO.Todos
+namespace TodoApp.DTOs.TodoDTOs.StatusDTO
 {
     public class StatusResponseDTO
     {
@@ -9,9 +9,9 @@ namespace TodoApp.DTO.Todos
         public string Description { get; set; }
         public StatusResponseDTO(Status status)
         {
-            this.Id = status.Id;
-            this.Title = status.Title;
-            this.Description = status.Description;
+            Id = status.Id;
+            Title = status.Title;
+            Description = status.Description;
         }
     }
 }

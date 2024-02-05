@@ -6,53 +6,55 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApp.Contexts;
-using TodoApp.Models.User;
+using TodoApp.Models.Test;
 
 namespace TodoApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PeopleController : ControllerBase
+    public class ParentController : ControllerBase
     {
         private readonly TodoDBContext _context;
 
-        public PeopleController(TodoDBContext context)
+        public ParentController(TodoDBContext context)
         {
             _context = context;
         }
 
-        // GET: api/People
+        // GET: api/Parent
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<People>>> GetPerson()
+        public async Task<ActionResult<IEnumerable<Parent>>> GetParents()
         {
-            return await _context.Person.ToListAsync();
+            var parent = await _context.Parents.Include(e => e.childrens).ToListAsync();
+            //var childres = await _context.Childrens.Select(e => e.parentId = parent.Id)
+            return parent;
         }
 
-        // GET: api/People/5
+        // GET: api/Parent/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<People>> GetPerson(int id)
+        public async Task<ActionResult<Parent>> GetParent(int id)
         {
-            var person = await _context.Person.FindAsync(id);
+            var parent = await _context.Parents.FindAsync(id); 
 
-            if (person == null)
+            if (parent == null)
             {
                 return NotFound();
             }
 
-            return person;
+            return parent;
         }
 
-        // PUT: api/People/5
+        // PUT: api/Parent/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPerson(int id, People person)
+        public async Task<IActionResult> PutParent(int id, Parent parent)
         {
-            if (id != person.Id)
+            if (id != parent.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(person).State = EntityState.Modified;
+            _context.Entry(parent).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +62,7 @@ namespace TodoApp.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PersonExists(id))
+                if (!ParentExists(id))
                 {
                     return NotFound();
                 }
@@ -73,36 +75,36 @@ namespace TodoApp.Controllers
             return NoContent();
         }
 
-        // POST: api/People
+        // POST: api/Parent
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<People>> PostPerson(People person)
+        public async Task<ActionResult<Parent>> PostParent(Parent parent)
         {
-            _context.Person.Add(person);
+            _context.Parents.Add(parent);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPerson", new { id = person.Id }, person);
+            return CreatedAtAction("GetParent", new { id = parent.Id }, parent);
         }
 
-        // DELETE: api/People/5
+        // DELETE: api/Parent/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePerson(int id)
+        public async Task<IActionResult> DeleteParent(int id)
         {
-            var person = await _context.Person.FindAsync(id);
-            if (person == null)
+            var parent = await _context.Parents.FindAsync(id);
+            if (parent == null)
             {
                 return NotFound();
             }
 
-            _context.Person.Remove(person);
+            _context.Parents.Remove(parent);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool PersonExists(int id)
+        private bool ParentExists(int id)
         {
-            return _context.Person.Any(e => e.Id == id);
+            return _context.Parents.Any(e => e.Id == id);
         }
     }
 }

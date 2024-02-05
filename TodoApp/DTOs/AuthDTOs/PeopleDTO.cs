@@ -1,6 +1,6 @@
 ﻿using TodoApp.Models.User;
 
-namespace TodoApp.DTO.User
+namespace TodoApp.DTO.AuthDTOs
 {
     public class PeopleDTO
     {

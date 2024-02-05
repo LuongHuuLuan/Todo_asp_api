@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TodoApp.Models;
+using TodoApp.Models.Test;
 using TodoApp.Models.Todos;
 using TodoApp.Models.User;
 
@@ -16,6 +17,9 @@ namespace TodoApp.Contexts
         public DbSet<People> Person { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Account> Accounts { get; set; }
+
+        public DbSet<Parent> Parents { get; set; }
+        public DbSet<Children> Childrens { get; set; }
 
         public TodoDBContext(DbContextOptions<TodoDBContext> options) : base(options)
         {

@@ -1,8 +1,8 @@
 ﻿using TodoApp.Models.Todos;
 
-namespace TodoApp.DTO.Todos
+namespace TodoApp.DTOs.TodoDTOs.TagDTO
 {
-    
+
     public class TagResponseDTO
     {
         public int Id { get; set; }
@@ -10,8 +10,8 @@ namespace TodoApp.DTO.Todos
 
         public TagResponseDTO(Tag tag)
         {
-            this.Id = tag.Id;
-            this.Title = tag.Title;
+            Id = tag.Id;
+            Title = tag.Title;
         }
     }
 }

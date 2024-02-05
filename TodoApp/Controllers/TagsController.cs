@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApp.Contexts;
-using TodoApp.DTO.Todos;
 using TodoApp.DTO.User;
+using TodoApp.DTOs.TodoDTOs.TagDTO;
 using TodoApp.Models.Todos;
 
 namespace TodoApp.Controllers
@@ -60,7 +60,7 @@ namespace TodoApp.Controllers
         // PUT: api/Tags/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTag(int id, TagRequestDTO tagDTO)
+        public async Task<ActionResult<TagResponseDTO>> PutTag(int id, TagRequestDTO tagDTO)
         {
             var tag = tagDTO.convertToTag();
             tag.Id = id;
@@ -94,20 +94,18 @@ namespace TodoApp.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                if (TagTileExists(tagDTO.Title))
                 {
-                    if(TagTileExists(tagDTO.Title)) {
-                        return BadRequest("Tag title is exist!");
-                    }
+                    return BadRequest("Tag title is exist!");
+                }
+                else
+                {
                     var tag = tagDTO.convertToTag();
                     _context.Tags.Add(tag);
                     await _context.SaveChangesAsync();
 
                     return CreatedAtAction("GetTag", new { id = tag.Id }, new TagResponseDTO(tag));
-                }
-                else
-                {
-                    return BadRequest(ModelState);
+
                 }
             }
             catch (Exception e)

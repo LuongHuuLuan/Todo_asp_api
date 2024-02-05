@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApp.Contexts;
+using TodoApp.DTOs.TodoDTOs.TodoListDTO;
 using TodoApp.Models.Todos;
 
 namespace TodoApp.Controllers
@@ -23,40 +24,51 @@ namespace TodoApp.Controllers
 
         // GET: api/TodoLists
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoList>>> GetTodoList()
+        public async Task<ActionResult<IEnumerable<TodoListResponseDTO>>> GetTodoList()
         {
-            return await _context.TodoList.ToListAsync();
+            var todolists = await _context.TodoList.Include(e => e.Account)
+                                        .Include(e => e.TodoItems)
+                                            .ThenInclude(e => e.Tags)
+                                        .Include(e => e.TodoItems)
+                                            .ThenInclude(e => e.Status)
+                                        .ToListAsync();
+            var result = todolists.Select(todolist => new TodoListResponseDTO(todolist)).ToList();
+            return result;
         }
 
         // GET: api/TodoLists/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoList>> GetTodoList(int id)
+        public async Task<ActionResult<IEnumerable<TodoListResponseDTO>>> GetTodoList(int id)
         {
-            var todoList = await _context.TodoList.FindAsync(id);
+            var todoLists = await _context.TodoList.Include(e => e.TodoItems)
+                                            .Include(e => e.TodoItems)
+                                                .ThenInclude(e => e.Tags)
+                                            .Include(e => e.TodoItems)
+                                                .ThenInclude(e => e.Status)
+                                            .Where(e => e.Account.Id == id).ToListAsync();
 
-            if (todoList == null)
+            if (todoLists == null)
             {
                 return NotFound();
             }
 
-            return todoList;
+            return todoLists.Select(todoList => new TodoListResponseDTO(todoList)).ToList();
         }
 
         // PUT: api/TodoLists/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoList(int id, TodoList todoList)
+        public async Task<IActionResult> PutTodoList(int id, TodoListRequestDTO todoListDTO)
         {
-            if (id != todoList.Id)
-            {
-                return BadRequest();
-            }
+            var todoList = await todoListDTO.convertToTodoList(_context);
+            todoList.Id = id;
 
             _context.Entry(todoList).State = EntityState.Modified;
 
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok(todoList);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -70,18 +82,25 @@ namespace TodoApp.Controllers
                 }
             }
 
-            return NoContent();
         }
 
         // POST: api/TodoLists
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TodoList>> PostTodoList(TodoList todoList)
+        public async Task<ActionResult<TodoListResponseDTO>> PostTodoList(TodoListRequestDTO todoListDTO)
         {
-            _context.TodoList.Add(todoList);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var todoList = await todoListDTO.convertToTodoList(_context);
+                _context.TodoList.Add(todoList);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTodoList", new { id = todoList.Id }, todoList);
+                return CreatedAtAction("GetTodoList", new { id = todoList.Id }, new TodoListResponseDTO(todoList));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.StackTrace);
+            }
         }
 
         // DELETE: api/TodoLists/5

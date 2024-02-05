@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using TodoApp.Models.Todos;
 
-namespace TodoApp.DTO.Todos
+namespace TodoApp.DTOs.TodoDTOs.TagDTO
 {
     public class TagRequestDTO
     {
@@ -11,7 +11,7 @@ namespace TodoApp.DTO.Todos
         public Tag convertToTag()
         {
             var tag = new Tag();
-            tag.Title = this.Title;
+            tag.Title = Title;
             return tag;
         }
     }
