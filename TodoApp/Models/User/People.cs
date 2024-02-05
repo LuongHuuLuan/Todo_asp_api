@@ -11,6 +11,7 @@ namespace TodoApp.Models.User
         public string LastName { get; set; }
         
         // One to one relationship
+        
         public virtual Contact Contact { get; set; }
 
         // One to one relationship
