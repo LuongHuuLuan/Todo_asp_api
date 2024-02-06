@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,16 +26,27 @@ namespace TodoApp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Parent>>> GetParents()
         {
+            // Eager Loading
             var parent = await _context.Parents.Include(e => e.childrens).ToListAsync();
-            //var childres = await _context.Childrens.Select(e => e.parentId = parent.Id)
+
             return parent;
         }
 
         // GET: api/Parent/5
+
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Parent>> GetParent(int id)
         {
-            var parent = await _context.Parents.FindAsync(id); 
+            // Eager Loading
+            var parent = _context.Parents.Include(e => e.childrens).Where(e => e.Id == id).FirstOrDefault();
+
+            // Explicit Loading
+            var parent1 = await _context.Parents.FindAsync(id);
+
+            _context.Entry(parent1).Collection(parent1 => parent1.childrens)
+                    .Query()
+                    .Load();
 
             if (parent == null)
             {
