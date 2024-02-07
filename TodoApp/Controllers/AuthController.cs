@@ -11,6 +11,7 @@ using TodoApp.DTOs.AuthDTOs;
 using TodoApp.DTOs.TodoDTOs.StatusDTO;
 using TodoApp.Models.Todos;
 using TodoApp.Models.User;
+using TodoApp.Utils;
 
 namespace TodoApp.Controllers
 {
@@ -44,42 +45,35 @@ namespace TodoApp.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                if (_context.Accounts.Any(account => account.Username.Equals(registerDTO.Username) && account.People.Contact.Email.Equals(registerDTO.Email)))
                 {
-                    if (_context.Accounts.Any(account => account.Username.Equals(registerDTO.Username) && account.People.Contact.Email.Equals(registerDTO.Email)))
-                    {
-                        return BadRequest("Username or email is exist!");
-                    }
-                    else
-                    {
-                        var people = new People();
-                        people.FirstName = registerDTO.FirstName;
-                        people.LastName = registerDTO.LastName;
-
-                        var account = new Account();
-                        account.Username = registerDTO.Username;
-                        account.Password = registerDTO.Password;
-
-                        var contact = new Contact();
-                        contact.Email = registerDTO.Email;
-                        contact.Address = registerDTO.Address;
-                        contact.Phone = registerDTO.Phone;
-                        contact.Website = registerDTO.Website;
-
-                        people.Account = account;
-                        people.Contact = contact;
-
-                        _context.Person.Add(people);
-
-
-                        await _context.SaveChangesAsync();
-
-                        return CreatedAtAction("GetUserInfo", new { id = account.Id }, new AccountResponseDTO(people));
-                    }
+                    return BadRequest("Username or email is exist!");
                 }
                 else
                 {
-                    return BadRequest(ModelState);
+                    var people = new People();
+                    people.FirstName = registerDTO.FirstName;
+                    people.LastName = registerDTO.LastName;
+
+                    var account = new Account();
+                    account.Username = registerDTO.Username;
+                    account.Password = Md5.GennerateMD5(registerDTO.Password);
+
+                    var contact = new Contact();
+                    contact.Email = registerDTO.Email;
+                    contact.Address = registerDTO.Address;
+                    contact.Phone = registerDTO.Phone;
+                    contact.Website = registerDTO.Website;
+
+                    people.Account = account;
+                    people.Contact = contact;
+
+                    _context.Person.Add(people);
+
+
+                    await _context.SaveChangesAsync();
+
+                    return CreatedAtAction("GetUserInfo", new { id = account.Id }, new AccountResponseDTO(people));
                 }
 
             }

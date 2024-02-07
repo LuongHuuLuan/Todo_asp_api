@@ -1,8 +1,12 @@
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 using TodoApp.Contexts;
 using TodoApp.Handlers;
+using TodoApp.Models.JWT;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,9 +65,33 @@ builder.Services.AddDbContext<TodoDBContextPostgreSQL>(options =>
 
 });
 
-builder.Services.AddAuthentication("BasicAuthentication")
-    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+//builder.Services.AddAuthentication("BasicAuthentication")
+//    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
+
+// add authentication bearer
+var key = builder.Configuration["Jwt:Secret"]; // lấy key từ app settings
+var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            // yêu cầu có kiểm tra issue default = true
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:ValidIssuer"],
+            // Yêu cầu kiểm tra về audience default = true
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:ValidAudience"],
+            // chỉ ra token phải cấu hình expire
+            RequireExpirationTime = true,
+            ValidateLifetime = true,
+            // Chỉ ra key mà token sẽ dùng sau này
+            IssuerSigningKey = signingKey,
+            RequireSignedTokens = true
+        };
+    });
 
 var app = builder.Build();
 
@@ -75,6 +103,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using TodoApp.Contexts;
+using TodoApp.Utils;
 
 namespace TodoApp.Handlers
 {
@@ -30,7 +31,7 @@ namespace TodoApp.Handlers
         {
 
             await base.HandleChallengeAsync(properties);
-            Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            Response.StatusCode = StatusCodes.Status401Unauthorized;
             Response.ContentType = "text/plain";
             string message = "authentification failed you don't have access to this content";
 
@@ -52,7 +53,7 @@ namespace TodoApp.Handlers
                 string[] credentials = Encoding.UTF8.GetString(bytes).Split(":");
                 string username = credentials[0];
                 string password = credentials[1];
-                var user = _context.Person.Include(e => e.Account).Include(e => e.Contact).SingleOrDefault(person => person.Account.Username == username && person.Account.Password == password);
+                var user = _context.Person.Include(e => e.Account).Include(e => e.Contact).SingleOrDefault(person => person.Account.Username == username && person.Account.Password == Md5.GennerateMD5(password));
 
                 if (user == null)
                     return AuthenticateResult.Fail("Invalid username and password");
