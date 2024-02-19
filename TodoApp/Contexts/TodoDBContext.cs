@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TodoApp.Models;
+using TodoApp.Models.JWT;
 using TodoApp.Models.Test;
 using TodoApp.Models.Todos;
 using TodoApp.Models.User;
@@ -20,6 +21,8 @@ namespace TodoApp.Contexts
 
         public DbSet<Parent> Parents { get; set; }
         public DbSet<Children> Childrens { get; set; }
+        public DbSet<OutstandingToken> OutstandingTokens { get; set; }
+        public DbSet<BlacklistedToken> BlacklistedTokens { get; set; }
 
         public TodoDBContext(DbContextOptions<TodoDBContext> options) : base(options)
         {
@@ -66,6 +69,12 @@ namespace TodoApp.Contexts
                 .WithOne(e => e.Status)
                 .HasForeignKey(e => e.StatusId)
                 .IsRequired();
+
+            //modelbuilder.Entity<OutstandingToken>()
+            //    .HasOne(e => e.Account)
+            //    .WithMany(e => e.outstandingTokens)
+            //    .HasForeignKey(e => e.AccountId)
+            //    .IsRequired(false);
         }
     }
 }

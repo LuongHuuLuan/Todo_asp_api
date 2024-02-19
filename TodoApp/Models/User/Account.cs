@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using TodoApp.Models.JWT;
 using TodoApp.Models.Todos;
 
 namespace TodoApp.Models.User
@@ -16,6 +17,9 @@ namespace TodoApp.Models.User
 
         // One to many
         public ICollection<TodoList> TodoLists { get; } = new List<TodoList>(); // Collection navigation containing dependents(TodoList)
+
+        // One to many 
+        public ICollection<OutstandingToken> outstandingTokens { get; } = new List<OutstandingToken>();
 
     }
 }

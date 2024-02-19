@@ -34,7 +34,7 @@ namespace TodoApp.Controllers
 
         // GET: api/Parent/5
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Parent>> GetParent(int id)
         {
