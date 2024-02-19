@@ -20,7 +20,6 @@ using TodoApp.Models.JWT;
 using TodoApp.Models.Todos;
 using TodoApp.Services;
 using TodoApp.Utils;
-
 namespace TodoApp.Controllers
 {
     [Route("api/[controller]")]
@@ -37,47 +36,6 @@ namespace TodoApp.Controllers
             _config = config;
             _token = token;
         }
-
-        //[HttpPost("Login")]
-        //public async Task<ActionResult<string>> Login([FromBody] LoginRequestDTO loginModel)
-        //{
-        //    // hash md5
-        //    var encodeMD5Password = Md5.GennerateMD5(loginModel.Password);
-        //    var user = _context.Person.Include(e => e.Account).Include(e => e.Contact).SingleOrDefault(person => person.Account.Username == loginModel.Username && person.Account.Password == Md5.GennerateMD5(loginModel.Password));
-
-        //    if (user != null)
-        //    {
-        //        // generate token
-        //        var key = _config["Jwt:Secret"];
-        //        // mã hóa key
-        //        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
-        //        // Ký vào signingKey
-        //        var signingCredential = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
-        //        // tạo claims chứa thông tin người dùng (Nếu cần)
-        //        // Có thể cấu hình các role để bắt theo role new Claim(ClaimTypes.Role, "admin")
-        //        var claims = new List<Claim>
-        //        {
-        //            new Claim(ClaimTypes.Name, user.LastName + "" + user.FirstName),
-        //            new Claim(ClaimTypes.Role, "admin")
-        //        };
-        //        // tạo token với các thông số cấu hình
-        //        var token = new JwtSecurityToken(
-        //            issuer: _config["Jwt:Issuer"],
-        //            audience: _config["Jwt:Audience"],
-        //            expires: DateTime.Now.AddMinutes(10),
-        //            signingCredentials: signingCredential,
-        //            claims: claims
-        //            );
-        //        // sinh ra chuỗi token với các thông số trên
-        //        var tokenGen = new JwtSecurityTokenHandler().WriteToken(token);
-
-        //        return new JsonResult(new { username = user.Account.Username, token = tokenGen });
-        //    }
-        //    else
-        //    {
-        //        return new JsonResult(new { message = "Invalid username or password" });
-        //    }
-        //}
 
         [HttpPost("Login")]
         public async Task<ActionResult<AuthenticatedResponse>> Login([FromBody] LoginRequestDTO loginModel)
