@@ -46,25 +46,22 @@ builder.Services.AddEndpointsApiExplorer();
 //});
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var connectionStringSqlServer = builder.Configuration.GetConnectionString("SqlServerConnection");
-var connectionStringPostgreSql = builder.Configuration.GetConnectionString("PostgreSqlConnection");
 builder.Services.AddDbContext<TodoDBContext>(options =>
 {
     options.UseMySQL(connectionString);
 
 });
+//var connectionStringSqlServer = builder.Configuration.GetConnectionString("SqlServerConnection");
+//builder.Services.AddDbContext<TodoDBContextSqlServer>(options =>
+//{
+//    options.UseSqlServer(connectionStringSqlServer);
+//});
 
-builder.Services.AddDbContext<TodoDBContextSqlServer>(options =>
-{
-    options.UseSqlServer(connectionStringSqlServer);
-
-});
-
-builder.Services.AddDbContext<TodoDBContextPostgreSQL>(options =>
-{
-    options.UseNpgsql(connectionStringPostgreSql);
-
-});
+//var connectionStringPostgreSql = builder.Configuration.GetConnectionString("PostgreSqlConnection");
+//builder.Services.AddDbContext<TodoDBContextPostgreSQL>(options =>
+//{
+//    options.UseNpgsql(connectionStringPostgreSql);
+//});
 
 //builder.Services.AddAuthentication("BasicAuthentication")
 //    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);

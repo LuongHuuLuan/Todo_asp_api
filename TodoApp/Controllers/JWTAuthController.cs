@@ -42,8 +42,8 @@ namespace TodoApp.Controllers
         {
             // hash md5
             var encodeMD5Password = Md5.GennerateMD5(loginModel.Password);
-            var user = _context.Person.Include(e => e.Account).Include(e => e.Contact).SingleOrDefault(person => person.Account.Username == loginModel.Username && person.Account.Password == Md5.GennerateMD5(loginModel.Password));
-
+            var user = _context.Person.Include(e => e.Account).Include(e => e.Contact)
+                                      .SingleOrDefault(person => person.Account.Username == loginModel.Username && person.Account.Password == Md5.GennerateMD5(loginModel.Password));
             if (user != null)
             {
                 // create claims for token
@@ -54,15 +54,12 @@ namespace TodoApp.Controllers
                     new Claim(ClaimTypes.Role, "admin"),
                     new Claim(JwtRegisteredClaimNames.Jti, jti)
                 };
-
                 var accessToken = _token.GenerateAccessToken(claims);
                 var refreshToken = _token.GenerateRefreshToken(claims);
-
                 // get expire time of token
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var jwtToken = tokenHandler.ReadJwtToken(refreshToken);
                 var expires = jwtToken.ValidTo;
-
                 // save token to db
                 var outStandingToken = new OutstandingToken
                 {
@@ -72,7 +69,6 @@ namespace TodoApp.Controllers
                     CreatedAt = DateTime.Now,
                     Account = user.Account
                 };
-
                 _context.OutstandingTokens.Add(outStandingToken);
                 await _context.SaveChangesAsync();
 
